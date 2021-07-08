@@ -8,7 +8,7 @@ $(document).ready(function(){
     // リスト表示の場合、更新時のみモーダル表示
 
     // イベントリストを登録
-    const eventControl = new EventControl(listElement);
+    const eventControl = new EventControl();
 
     eventControl.reSetList(listElement);
     eventControl.uploadFile(uploadArea);
@@ -18,62 +18,55 @@ $(document).ready(function(){
 
 export interface _IeventControl {
     // リスト再表示時に呼び出し
-    reSetList(element: jquery): void;
-    uploadFile(element: jquery): void;
-    downloadFile(element: jquery): void;
-    deleteFiles(element: jquery): void;
+    reSetList(element: JQuery<HTMLElement>): void;
+    uploadFile(element: JQuery<HTMLElement>): void;
+    downloadFile(element: JQuery<HTMLElement>): void;
+    deleteFiles(element: JQuery<HTMLElement>): void;
 }
 
 export class EventControl implements _IeventControl{
-    private element: jquery;
-
-    constructor(inElement: jquery){
-        this.element = inElement;
-    }
-
-    reSetList(element: jquery){
+    reSetList(element: JQuery<HTMLElement>){
         const modalControl = new ModalControl("リスト再表示処理");
         $(".upload_area").on("change",function(){
             // アップロードファイルが入った時点で読み込みを開始する
-    
+
             // モーダルウィンドウを表示
-    
+
             // データ取得開始
-    
+
             // データ取得、送信完了したらモーダルに表示
             // 削除の場合は件数を表示
-    
+
             // OKボタンが押されたらモーダルを非表示
         });
     }
 
 
-    uploadFile(element: jquery){
+    uploadFile(element: JQuery<HTMLElement>){
         $(".upload_area").on("change",function(){
             // アップロードファイルが入った時点で読み込みを開始する
-    
+
             // モーダルウィンドウを表示
-    
+
             // データ取得開始
-    
+
             // データ取得、送信完了したらモーダルに表示
             // 削除の場合は件数を表示
-    
+
             // OKボタンが押されたらモーダルを非表示
         });
     }
 
-    downloadFile(element: jquery){
+    downloadFile(element: JQuery<HTMLElement>){
         $(".file_list").on("click",function(){
-            
+
         });
     }
 
-    deleteFiles(element: jquery){
-        $(".delete_btn").on("click",function(){
-            // ファイル取得
-            this.element;
-            
+    deleteFiles(element: JQuery<HTMLElement>){
+      $(".delete_btn").on("click",function(){
+        let filesNum = element.length;
+
             // 複数ファイル取得
             if(window.confirm("")){
                 alert("")

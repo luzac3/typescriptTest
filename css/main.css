@@ -1,0 +1,11 @@
+.hidden {
+    display: none;
+}
+
+.modal {
+    z-index: 2;
+    position: fixed;
+    left : 50%;
+    margin-left: -width / 2px;
+    display: flex;
+}

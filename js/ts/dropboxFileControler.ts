@@ -1,18 +1,24 @@
-export interface _IoperationDropboxFile {
-    uploadFile(file: File): Promise<any>;
-    downloadFile(fileName: string): Promise<any>;
-    deleteFile(fileNames: string[]): Promise<any>;
-    getFileList(): Promise<any>;
+import { HandleCookie } from "./handleCookie";
+
+interface _IdropboxFileControler {
+    uploadFile(file: File): Promise<unknown>;
+    downloadFile(fileName: string): Promise<unknown>;
+    deleteFile(fileNames: string[]): Promise<unknown>;
+    getFileList(): Promise<unknown>;
 }
 
-export class OperationDropboxFile implements _IoperationDropboxFile{
-    private token: string;
+export class DropboxFileControler implements _IdropboxFileControler{
+    private accessToken: string;
 
-    // ファイルオブジェクト設定
     constructor() {
-        const getTokenFile = require('./getini.ts');
-        const getToken = new getTokenFile.GetToken();
-        this.token = getToken.getToken();
+        const handleCookie = new HandleCookie();
+
+        this.accessToken = handleCookie.getCookie("accessToken");
+        
+        // トークンがない場合、認証ページに移動
+        if(this.accessToken == ""){
+            location.href = "../oAuth.html";
+        }
     }
 
     uploadFile(file: File){
@@ -22,7 +28,7 @@ export class OperationDropboxFile implements _IoperationDropboxFile{
             let data: string | ArrayBuffer;
             const contentType = 'application/octet-stream';
             const headers = {
-                "Authorization": "Bearer " + this.token,
+                "Authorization": "Bearer " + this.accessToken,
                 "Dropbox-API-Arg": '{"path": "' + file.name + '","mode": "add","autorename": true,"mute": false}'
             }
 
@@ -30,15 +36,15 @@ export class OperationDropboxFile implements _IoperationDropboxFile{
 
             reader.readAsDataURL(file);
 
-            reader.onload = function(){
+            reader.onload = () => {
                 data = reader.result;
 
-                const operationDropboxFile = new OperationDropboxFile();
+                const dropboxFileControler = new DropboxFileControler();
 
-                operationDropboxFile.sendRequest(url, data, contentType, headers).then(function(){
+                dropboxFileControler.sendRequest(url, data, contentType, headers).then(() => {
                     alert("ok");
                     resolve(1);
-                },function(){
+                },() => {
                     //エラーログ吐き出し
                     alert("ng");
                     reject(0);
@@ -53,14 +59,14 @@ export class OperationDropboxFile implements _IoperationDropboxFile{
             const data = '';
             const contentType = '';
             const headers = {
-                "Authorization": "Bearer " + this.token,
+                "Authorization": "Bearer " + this.accessToken,
                 "Dropbox-API-Arg": '{"path": "' + fileName + '","mode": "add","autorename": true,"mute": false}'
             }
 
-            this.sendRequest(url, data, contentType, headers).then(function(){
+            this.sendRequest(url, data, contentType, headers).then(() => {
                 alert("ok");
                 resolve(1);
-            },function(){
+            },() => {
                 //エラーログ吐き出し
                 alert("ng");
                 reject(0);
@@ -74,13 +80,13 @@ export class OperationDropboxFile implements _IoperationDropboxFile{
             const data = '{"ids":' + fileNames + '}';
             const contentType = 'Content-Type: application/json';
             const headers = {
-                "Authorization": "Bearer " + this.token
+                "Authorization": "Bearer " + this.accessToken
             }
 
-            this.sendRequest(url, data, contentType, headers).then(function(){
+            this.sendRequest(url, data, contentType, headers).then(() => {
                 alert("ok");
                 resolve(1);
-            },function(){
+            },() => {
                 //エラーログ吐き出し
                 alert("ng");
                 reject(0);
@@ -94,38 +100,37 @@ export class OperationDropboxFile implements _IoperationDropboxFile{
             const data = '';
             const contentType = 'Content-Type: application/json';
             const headers = {
-                "Authorization": "Bearer " + this.token
+                "Authorization": "Bearer " + this.accessToken
             }
 
-            this.sendRequest(url, data, contentType, headers).then(function(){
+            this.sendRequest(url, data, contentType, headers).then(() => {
                 alert("ok");
                 return [];
-            },function(){
+            },() => {
                 //エラーログ吐き出し
                 alert("ng");
             });
         });
     }
 
-    private sendRequest(url: string, data: string | ArrayBuffer, contentType: string, headers: {}): Promise<any> {
-        return new Promise((resolve, reject) => {
-            $.ajax(
-                {
-                    url: url,
-                        type: 'post',
-                        data: data,
-                        processData: false,
-                        contentType: contentType,
-                        headers: headers,
-                        success: function (ret: JSON) {
-                            resolve(ret);
-                        },
-                        error: function () {
-                            reject('error');
-                        }
+    private sendRequest(url: string, data: string | ArrayBuffer, contentType: string, headers: {}): Promise<string> {
+        let header: string;
 
-                }
-            )
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                'url': url,
+                'type': 'post',
+                'data': data,
+                'processData': false,
+                'contentType': contentType,
+                'headers': headers,
+            }).then((res: string) => {
+                resolve(res);
+            },() => {
+                reject('error');
+            }).catch((e) => {
+
+            });
         });
     }
 }
