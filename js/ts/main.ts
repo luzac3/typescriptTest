@@ -1,24 +1,26 @@
 import { EventControler } from "./eventControler";
+import { DragAndDrop } from "./dragAndDropFile";
 
-$(document).ready(function(){
+$(document).ready(() => {
     const reSetButtonElement = $(".reSetButton");
     const listElement = $(".file_list");
-    const uploadAreaElement = $(".upload_area");
-    const downloadLinkElement = $(".download_link");
+    const uploadButtonElement = $(".upload_button");
+    const uploadFileElement = $(".upload_file");
+    const fileElements = $("file_list").find(".file_name");
     const deleteButtonElement = $(".delete_button");
-    const deleteFileElements = $(".delete_button");
-
-    // 
-    const deleteFilesElement = $(".delete_files");
-
+    const dropAreaElement = $(".upload_area");
+    const fileInformationElement = $(".file_information");
+    
     const eventControler = new EventControler();
+    const dragAndDrop = new DragAndDrop(dropAreaElement, fileInformationElement, uploadFileElement);
 
     // list取得
     eventControler.setList(listElement);
 
     // イベントリストを登録
     eventControler.reSetList(reSetButtonElement, listElement);
-    eventControler.uploadFile(uploadAreaElement);
-    eventControler.downloadFile(downloadLinkElement);
-    eventControler.deleteFiles(deleteButtonElement, deleteFileElements);
+    eventControler.uploadFile(uploadButtonElement, uploadFileElement);
+    eventControler.downloadFile(fileElements);
+    eventControler.deleteFiles(deleteButtonElement, fileElements);
+    dragAndDrop.setDragAndDropEvent();
 });

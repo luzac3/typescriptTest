@@ -1,11 +1,11 @@
 import appKeys = require("../config/appKeys.json");
 
-interface _IoAuth {
+interface _IhandleOAuth {
   authorize(): void;
   getAccessTokenFromCode(code: string): Promise<unknown>;
 }
 
-export class OAuthControler implements _IoAuth{
+export class HandleOAuth implements _IhandleOAuth{
   private clientId: string;
   private clientSecret: string;
   private redirectUri: string;
@@ -40,7 +40,7 @@ export class OAuthControler implements _IoAuth{
         //console.log(jsonData.token_type);
         //console.log(jsonData.uid);
         resolve(jsonData.access_token);
-      },(res: string) => {
+      },(res: any) => {
         console.log(res);
       });
     });

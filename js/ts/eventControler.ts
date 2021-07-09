@@ -1,103 +1,103 @@
-import { ModalControler } from "./modalControler";
-import { DropboxFileControler } from "./dropboxFileControler";
+import { HandleModal } from "./handleModal";
+import { HandleDropboxFile } from "./handleDropboxFile";
 
 interface _IeventControler {
     setList(listElement: JQuery<HTMLElement>): void;
     // リスト再表示時に呼び出し
     reSetList(reSetButtonElement:JQuery<HTMLElement>, listElement: JQuery<HTMLElement>): void;
-    uploadFile(uploadAreaElement: JQuery<HTMLElement>): void;
+    uploadFile(uploadButtonElement: JQuery<HTMLElement>, uploadFileElement: JQuery<HTMLElement>): void;
     downloadFile(downloadLinkElement: JQuery<HTMLElement>): void;
     deleteFiles(deleteButtonElement: JQuery<HTMLElement>, deleteFileElements: JQuery<HTMLElement>): void;
 }
 
 export class EventControler implements _IeventControler {
     setList(listElement: JQuery<HTMLElement>) {
-
+        // listを表示する
     }
 
     reSetList(reSetButtonElement:JQuery<HTMLElement>, listElement: JQuery<HTMLElement>) {
         reSetButtonElement.on("change",function(){
-            const modalControler = new ModalControler("リスト再表示処理",$(".modal_window"));
+            const handleModal = new HandleModal("リスト再表示処理",$(".modal_window"));
 
-            const dropboxFileControler = new DropboxFileControler();
+            const handleDropboxFile = new HandleDropboxFile();
 
             // モーダルウィンドウを表示
-            modalControler.showModal();
+            handleModal.showModal();
 
-            dropboxFileControler.getFileList().then(function(listData){
+            handleDropboxFile.getFileList().then(function(listData){
                 // 取得結果をモーダルに表示
                 if(Array.isArray(listData)){
-                    modalControler.showResult();
+                    handleModal.showResult();
 
                     // ファイル一覧を表示
                     this.setList(listElement);
 
                 }else{
-                    modalControler.showResult("未知のエラー");
+                    handleModal.showResult("未知のエラー");
                 }
             },(res) => {
-                modalControler.showResult(res.error);
+                handleModal.showResult(res.error);
             }).catch((e) => {
-                modalControler.showResult(e.message);
+                handleModal.showResult(e.message);
             });
         });
     }
 
-    uploadFile(uploadAreaElement: JQuery<HTMLElement>) {
-        uploadAreaElement.on("change",() => {
+    uploadFile(uploadButtonElement: JQuery<HTMLElement>, uploadFileElement: JQuery<HTMLElement>) {
+        uploadButtonElement.on("click",() => {
             // アップロードファイルが入った時点で読み込みを開始する
-            const modalControler = new ModalControler("アップロード",$(".modal_window"));
+            const handleModal = new HandleModal("アップロード",$(".modal_window"));
 
-            const dropboxFileControler = new DropboxFileControler();
+            const handleDropboxFile = new HandleDropboxFile();
 
-            const uploadFile = uploadAreaElement.find("file");
+            const uploadFile = (<HTMLInputElement>uploadFileElement[0]).files[0];
 
             try{
                 // モーダルウィンドウを表示
-                modalControler.showModal();
+                handleModal.showModal();
             }catch{
                 //
             }
 
-            // データアップロード
-            dropboxFileControler.uploadFile(uploadFile).then((res) => {
+            // アップロード処理実行
+            handleDropboxFile.uploadFile(uploadFile).then((res) => {
                 if(typeof res === "number"){
-                    modalControler.showResult();
+                    handleModal.showResult();
                 }else{
-                    modalControler.showResult("未知のエラーが発生しました");
+                    handleModal.showResult("未知のエラーが発生しました");
                 }
             },(res) =>{
-                modalControler.showResult(res.error);
+                handleModal.showResult(res.error);
             }).catch((e) => {
-                modalControler.showResult(e.message);
+                handleModal.showResult(e.message);
             });
         });
     }
 
     downloadFile(downloadLinkElement: JQuery<HTMLElement>) {
-        downloadLinkElement.on("click",() => {
-            const modalControler = new ModalControler("ダウンロード",$(".modal_window"));
+        downloadLinkElement.on("click",(event) => {
+            const handleModal = new HandleModal("ダウンロード",$(".modal_window"));
 
-            const dropboxFileControler = new DropboxFileControler();
+            const handleDropboxFile = new HandleDropboxFile();
 
             try{
                 // モーダルウィンドウを表示
-                modalControler.showModal();
+                handleModal.showModal();
             }catch{
                 //
             }
 
-            // データダウンロード
-            dropboxFileControler.downloadFile(downloadLinkElement).then((res) => {
+            // ダウンロード処理実行
+            handleDropboxFile.downloadFile($(event.target).data("filename")).then((res) => {
                 if(typeof res === "number"){
-                    modalControler.showResult();
+                    handleModal.showResult();
                 }else{
-                    modalControler.showResult("未知のエラーが発生しました");
+                    handleModal.showResult("未知のエラーが発生しました");
                 }
             },(res) =>{
-                modalControler.showResult(res.error);
+                handleModal.showResult(res.error);
             }).catch((e) => {
-                modalControler.showResult(e.message);
+                handleModal.showResult(e.message);
             });
 
         });
@@ -109,29 +109,40 @@ export class EventControler implements _IeventControler {
 
             const confirmMessage = filesNum + "件削除します。\nよろしいですか？";
 
-            if(window.confirm(confirmMessage)){
-                const modalControler = new ModalControler("削除",$(".modal_window"));
+            let deleteFileElementsList: JQuery<HTMLElement>;
 
-                const dropboxFileControler = new DropboxFileControler();
+            let deleteFileList: string[];
+
+            if(window.confirm(confirmMessage)){
+                const handleModal = new HandleModal("削除",$(".modal_window"));
+
+                const handleDropboxFile = new HandleDropboxFile();
 
                 try{
                     // モーダルウィンドウを表示
-                    modalControler.showModal();
+                    handleModal.showModal();
                 }catch{
                     //
                 }
 
-                // 削除
-                dropboxFileControler.deleteFile(deleteFileElements).then((res) => {
+                // 削除ファイル名一覧を取得
+                deleteFileElementsList = deleteFileElements.find("input[type='checkbox']").filter(":checked");
+
+                deleteFileElementsList.each((key, value)=>{
+                    deleteFileList.push($(value).data("filename"));
+                });
+
+                // 削除処理実行
+                handleDropboxFile.deleteFiles(deleteFileList).then((res) => {
                     if(typeof res === "number"){
-                        modalControler.showResult();
+                        handleModal.showResult();
                     }else{
-                        modalControler.showResult("未知のエラーが発生しました");
+                        handleModal.showResult("未知のエラーが発生しました");
                     }
                 },(res) =>{
-                    modalControler.showResult(res.error);
+                    handleModal.showResult(res.error);
                 }).catch((e) => {
-                    modalControler.showResult(e.message);
+                    handleModal.showResult(e.message);
                 });
             }
         });

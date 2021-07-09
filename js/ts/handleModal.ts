@@ -1,4 +1,4 @@
-interface _ImodalControler {
+interface _IhandleModal {
     // モーダルウィンドウを表示
     showModal(): void;
 
@@ -9,7 +9,7 @@ interface _ImodalControler {
     setStrAction(inStrAction: string): void;
 }
 
-export class ModalControler implements _ImodalControler{
+export class HandleModal implements _IhandleModal{
     // リスト取得、削除など挙動により違うメッセージを格納
     private strAction: string;
     private modalWindowElement: JQuery<HTMLElement>;
@@ -56,7 +56,7 @@ export class ModalControler implements _ImodalControler{
 
         $(elementP).html(message);
 
-        $(elementP).appendChild(this.modalWindowElement);
+        $(elementP).append(this.modalWindowElement);
     }
 
     private createBottonInModal(buttonName: string){
@@ -71,7 +71,7 @@ export class ModalControler implements _ImodalControler{
 
         $(elementButton).html(buttonName);
 
-        $(elementButton).appendChild(this.modalWindowElement);
+        $(elementButton).append(this.modalWindowElement);
     }
 
     private hideModal(){

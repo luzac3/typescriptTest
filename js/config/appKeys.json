@@ -1,4 +1,4 @@
 {
-    "appKeys": "foo",
+    "appKey": "foo",
     "appSecret": "123"
   }

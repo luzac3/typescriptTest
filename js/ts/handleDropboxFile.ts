@@ -1,20 +1,20 @@
 import { HandleCookie } from "./handleCookie";
 
-interface _IdropboxFileControler {
+interface _IhandleDropboxFile {
     uploadFile(file: File): Promise<unknown>;
     downloadFile(fileName: string): Promise<unknown>;
-    deleteFile(fileNames: string[]): Promise<unknown>;
+    deleteFiles(fileNames: string[]): Promise<unknown>;
     getFileList(): Promise<unknown>;
 }
 
-export class DropboxFileControler implements _IdropboxFileControler{
+export class HandleDropboxFile implements _IhandleDropboxFile{
     private accessToken: string;
 
     constructor() {
         const handleCookie = new HandleCookie();
 
         this.accessToken = handleCookie.getCookie("accessToken");
-        
+
         // トークンがない場合、認証ページに移動
         if(this.accessToken == ""){
             location.href = "../oAuth.html";
@@ -37,11 +37,16 @@ export class DropboxFileControler implements _IdropboxFileControler{
             reader.readAsDataURL(file);
 
             reader.onload = () => {
-                data = reader.result;
+                if(data == null){
+                  alert("ファイル情報の取得に失敗しました");
+                  return;
+                }else{
+                  data = reader.result;
+                }
 
-                const dropboxFileControler = new DropboxFileControler();
+                const handleDropboxFile = new HandleDropboxFile();
 
-                dropboxFileControler.sendRequest(url, data, contentType, headers).then(() => {
+                handleDropboxFile.sendRequest(url, data, contentType, headers).then(() => {
                     alert("ok");
                     resolve(1);
                 },() => {
@@ -74,7 +79,7 @@ export class DropboxFileControler implements _IdropboxFileControler{
         });
     }
 
-    deleteFile(fileNames: string[]){
+    deleteFiles(fileNames: string[]){
         return new Promise((resolve,reject) => {
             const url = 'https://content.dropboxapi.com/2/file_requests/delete';
             const data = '{"ids":' + fileNames + '}';
@@ -99,16 +104,18 @@ export class DropboxFileControler implements _IdropboxFileControler{
             const url = 'https://content.dropboxapi.com/2/file_requests/list';
             const data = '';
             const contentType = 'Content-Type: application/json';
+            let dropboxFileList: {};
             const headers = {
                 "Authorization": "Bearer " + this.accessToken
             }
 
-            this.sendRequest(url, data, contentType, headers).then(() => {
-                alert("ok");
-                return [];
+            this.sendRequest(url, data, contentType, headers).then((list: string) => {
+                dropboxFileList = JSON.stringify(list);
+                resolve(dropboxFileList);
             },() => {
                 //エラーログ吐き出し
                 alert("ng");
+                reject(0);
             });
         });
     }

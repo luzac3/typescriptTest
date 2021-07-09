@@ -1,0 +1,99 @@
+export class DragAndDrop {
+    dropAreaElement: JQuery<HTMLElement>;
+    fileInformationElement: JQuery<HTMLElement>
+    uploadFileElement: JQuery<HTMLElement>
+
+    constructor(inDropAreaElemnt: JQuery<HTMLElement>, inFileInformationElement: JQuery<HTMLElement>, inUploadFileElement: JQuery<HTMLElement>) {
+        this.dropAreaElement = inDropAreaElemnt;
+        this.fileInformationElement = inFileInformationElement;
+        this.uploadFileElement = inUploadFileElement;
+    }
+
+    setDragAndDropEvent(){
+        this.dropAreaElement.on('dragover',(event) => {
+           event.stopPropagation();
+           event.preventDefault();
+           this.dropAreaElement[0].style.background = '#e1e7f0';
+        });
+
+        this.dropAreaElement.on('dragleave',(event) => {
+           event.stopPropagation();
+           event.preventDefault();
+           this.dropAreaElement[0].style.background = '#ffffff';
+        });
+
+        this.dropAreaElement.on('drop',(event) => {
+            let fileListObject: FileList;
+            let fileObject: File;
+
+            event.stopPropagation();
+            event.preventDefault();
+            this.dropAreaElement[0].style.background = '#ffffff';
+
+            fileListObject = event.originalEvent.dataTransfer.files;
+
+            if(fileListObject.length > 1){
+                alert("複数ファイルアップロードには対応しておりません");
+            }
+           
+            // inputのファイルにデータを格納
+            (<HTMLInputElement>this.uploadFileElement[0]).files[0] = fileObject;
+        });
+
+        this.dropAreaElement.on('click',() => {
+            this.uploadFileElement.trigger('click');
+        });
+
+        this.uploadFileElement.on('change',() => {
+            let fileSize: number;
+            let fileUnit: string;
+
+            const fileObject = (<HTMLInputElement>this.uploadFileElement[0]).files[0];
+
+            const changeSizeToAppropriateUnit = new ChangeSizeToAppropriateUnit(fileObject.size);
+
+            // ファイルサイズを変換(byte→Kb,Mb,Gb)
+            fileSize = changeSizeToAppropriateUnit.getConvertedSize();
+            fileUnit = changeSizeToAppropriateUnit.getUnit();
+
+            // ファイル情報取得、HTML書き換え
+            this.fileInformationElement.html(fileObject.name+"(" + fileSize + fileUnit + ")");
+        });
+    }
+}
+
+class ChangeSizeToAppropriateUnit {
+    private kb: number;
+    private mb: number;
+    private gb: number;
+    private unit: string;
+    private convertedSize: number;
+
+    constructor(fileSize: number){
+        this.kb = 1024;
+        this.mb = Math.pow(this.kb, 2);
+        this.gb = Math.pow(this.kb, 3);
+
+        if(fileSize >= this.gb) {
+            this.unit = 'Gb';
+            this.convertedSize = Math.floor((fileSize / this.kb) * 100) / 100;
+        }else if(fileSize >= this.mb) {
+            this.unit = 'Mb';
+            this.convertedSize = Math.floor((fileSize / this.mb) * 100) / 100;
+        }else if(fileSize >= this.kb) {
+            this.unit = 'Kb';
+            this.convertedSize = Math.floor((fileSize / this.kb) * 100) / 100;
+        }else{
+            this.unit = 'b';
+            this.convertedSize = fileSize;
+        }
+    }
+
+    getUnit(){
+        return this.unit;
+    }
+
+    getConvertedSize(){
+        return this.convertedSize;
+    }
+}
