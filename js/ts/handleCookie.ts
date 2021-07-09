@@ -18,16 +18,16 @@ export class HandleCookie implements _IhandleCookie{
     getCookie(key: string){
         const cookies = document.cookie;
         const cookiesArray = cookies.split(';');
-      
+
         let cookieArray: string[];
-      
+
         cookiesArray.forEach((cookie) => {
           cookieArray = cookie.split('=');
           if( cookieArray[0].trim() == key){
               return cookieArray[1].trim();
           }
         });
-      
+
         // マッチしなかった場合
         return "";
     }

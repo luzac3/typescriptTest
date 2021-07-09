@@ -2,6 +2,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="/typescriptTestWrapper/src/typescriptTest/css/main.css" type="text/css" media="screen">
+        <script type="module" src="./js/dist/main.js"></script>
     </head>
     <body>
       <div class="main">
@@ -13,15 +14,25 @@
             <p><button type="button" name="" value="upload_file">アップロード</button></p>
         </div>
         <div>
-            <p><button type="button" class="reSetButton" value="reSetButton">リスト再読込</button></p>
+          <p><button type="button" class="reSetButton" value="reSetButton">リスト再読込</button></p>
         </div>
         <div class="file_list_wrapper">
-            <nav>
-                <li class="file_list template hidden" data-fileId="">
-                    <span>ファイル名</span>
-                    <span><input type="checkbox"></span>
-                </li>
-            </nav>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">title</th>
+                <th scope="col">created</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody clss="file_list template hidden" data-fileId="">
+              <tr>
+                <td>ファイル名</td>
+                <td>作成日時</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div><button type="button" value="del" class="del">選択項目削除</button></div>
         <div class="modal hidden"></div>

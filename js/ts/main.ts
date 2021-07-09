@@ -1,26 +1,26 @@
-import { EventControler } from "./eventControler";
-import { DragAndDrop } from "./dragAndDropFile";
+import { EventControler } from './eventControler.js';
+import { DragAndDrop } from './dragAndDropFile.js';
 
 $(document).ready(() => {
-    const reSetButtonElement = $(".reSetButton");
-    const listElement = $(".file_list");
-    const uploadButtonElement = $(".upload_button");
-    const uploadFileElement = $(".upload_file");
-    const fileElements = $("file_list").find(".file_name");
-    const deleteButtonElement = $(".delete_button");
-    const dropAreaElement = $(".upload_area");
-    const fileInformationElement = $(".file_information");
-    
-    const eventControler = new EventControler();
-    const dragAndDrop = new DragAndDrop(dropAreaElement, fileInformationElement, uploadFileElement);
+  const reSetButtonElement = $(".reSetButton");
+  const listElement = $(".file_list");
+  const uploadButtonElement = $(".upload_button");
+  const uploadFileElement = $(".upload_file");
+  const fileElements = $("file_list").find(".file_name");
+  const deleteButtonElement = $(".delete_button");
+  const dropAreaElement = $(".upload_area");
+  const fileInformationElement = $(".file_information");
 
-    // list取得
-    eventControler.setList(listElement);
+  const eventControler = new EventControler();
+  const dragAndDrop = new DragAndDrop(dropAreaElement, fileInformationElement, uploadFileElement);
 
-    // イベントリストを登録
-    eventControler.reSetList(reSetButtonElement, listElement);
-    eventControler.uploadFile(uploadButtonElement, uploadFileElement);
-    eventControler.downloadFile(fileElements);
-    eventControler.deleteFiles(deleteButtonElement, fileElements);
-    dragAndDrop.setDragAndDropEvent();
+  // list取得
+  eventControler.setList(listElement);
+
+  // イベントリストを登録
+  eventControler.reSetList(reSetButtonElement, listElement);
+  eventControler.uploadFile(uploadButtonElement, uploadFileElement);
+  eventControler.downloadFile(fileElements);
+  eventControler.deleteFiles(deleteButtonElement, fileElements);
+  dragAndDrop.setDragAndDropEvent();
 });

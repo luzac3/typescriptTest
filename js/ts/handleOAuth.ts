@@ -1,4 +1,4 @@
-import appKeys = require("../config/appKeys.json");
+import appKeys from '../config/appKeys.json';
 
 interface _IhandleOAuth {
   authorize(): void;

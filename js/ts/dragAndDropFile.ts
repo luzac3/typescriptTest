@@ -30,14 +30,30 @@ export class DragAndDrop {
             event.preventDefault();
             this.dropAreaElement[0].style.background = '#ffffff';
 
+            if(event.originalEvent == undefined){
+              alert("未知のエラーです");
+              return;
+            }
+
+            if(event.originalEvent.dataTransfer == null){
+              alert("未知のエラーです");
+              return;
+            }
+
             fileListObject = event.originalEvent.dataTransfer.files;
 
             if(fileListObject.length > 1){
                 alert("複数ファイルアップロードには対応しておりません");
             }
-           
+
+            if((<HTMLInputElement>this.uploadFileElement[0]).files == null){
+              return;
+            }
+
+            fileObject = fileListObject[0];
+
             // inputのファイルにデータを格納
-            (<HTMLInputElement>this.uploadFileElement[0]).files[0] = fileObject;
+            this.uploadFileElement.prop('files')[0] = fileObject;
         });
 
         this.dropAreaElement.on('click',() => {
@@ -48,7 +64,7 @@ export class DragAndDrop {
             let fileSize: number;
             let fileUnit: string;
 
-            const fileObject = (<HTMLInputElement>this.uploadFileElement[0]).files[0];
+            const fileObject = this.uploadFileElement.prop('files')[0];
 
             const changeSizeToAppropriateUnit = new ChangeSizeToAppropriateUnit(fileObject.size);
 

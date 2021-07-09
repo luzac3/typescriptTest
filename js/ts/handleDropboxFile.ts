@@ -1,4 +1,4 @@
-import { HandleCookie } from "./handleCookie";
+import { HandleCookie } from "./handleCookie.js";
 
 interface _IhandleDropboxFile {
     uploadFile(file: File): Promise<unknown>;
@@ -17,7 +17,7 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
 
         // トークンがない場合、認証ページに移動
         if(this.accessToken == ""){
-            location.href = "../oAuth.html";
+            location.href = "./oAuth.html";
         }
     }
 
@@ -37,7 +37,7 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
             reader.readAsDataURL(file);
 
             reader.onload = () => {
-                if(data == null){
+                if(reader.result == null){
                   alert("ファイル情報の取得に失敗しました");
                   return;
                 }else{
@@ -121,8 +121,6 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
     }
 
     private sendRequest(url: string, data: string | ArrayBuffer, contentType: string, headers: {}): Promise<string> {
-        let header: string;
-
         return new Promise((resolve, reject) => {
             $.ajax({
                 'url': url,

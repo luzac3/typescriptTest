@@ -1,8 +1,6 @@
-import redirectUri = require("../config/redirectUri.json");
-import { HandleOAuth } from './handleOAuth';
-  import {
-    HandleCookie
-  } from './handleCookie';
+import redirectUri from '../config/redirectUri.json';
+import { HandleOAuth } from './handleOAuth.js';
+import { HandleCookie } from './handleCookie.js';
 
 $(document).ready(() => {
   const url = location.search.substring(1).split('&');
