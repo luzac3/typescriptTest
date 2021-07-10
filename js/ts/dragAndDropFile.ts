@@ -24,7 +24,6 @@ export class DragAndDrop {
 
         this.dropAreaElement.on('drop',(event) => {
             let fileListObject: FileList;
-            let fileObject: File;
 
             event.stopPropagation();
             event.preventDefault();
@@ -46,18 +45,16 @@ export class DragAndDrop {
                 alert("複数ファイルアップロードには対応しておりません");
             }
 
-            if((<HTMLInputElement>this.uploadFileElement[0]).files == null){
+            if(this.uploadFileElement.prop('files') == null || this.uploadFileElement.prop('files') == undefined){
               return;
             }
 
-            fileObject = fileListObject[0];
-
             // inputのファイルにデータを格納
-            this.uploadFileElement.prop('files')[0] = fileObject;
+            this.uploadFileElement.prop('files',fileListObject);
         });
 
         this.dropAreaElement.on('click',() => {
-            this.uploadFileElement.trigger('click');
+            this.uploadFileElement[0].click();
         });
 
         this.uploadFileElement.on('change',() => {
@@ -91,16 +88,16 @@ class ChangeSizeToAppropriateUnit {
         this.gb = Math.pow(this.kb, 3);
 
         if(fileSize >= this.gb) {
-            this.unit = 'Gb';
+            this.unit = 'Gbyte';
             this.convertedSize = Math.floor((fileSize / this.kb) * 100) / 100;
         }else if(fileSize >= this.mb) {
-            this.unit = 'Mb';
+            this.unit = 'Mbyte';
             this.convertedSize = Math.floor((fileSize / this.mb) * 100) / 100;
         }else if(fileSize >= this.kb) {
-            this.unit = 'Kb';
+            this.unit = 'Kbyte';
             this.convertedSize = Math.floor((fileSize / this.kb) * 100) / 100;
         }else{
-            this.unit = 'b';
+            this.unit = 'byte';
             this.convertedSize = fileSize;
         }
     }
