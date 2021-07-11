@@ -1,4 +1,5 @@
 import { HandleDropboxFile } from "./handleDropboxFile";
+import { HandleCookie } from "./handleCookie";
 
 interface _IeventControler {
     setList(listElement: JQuery<HTMLElement>): void;
@@ -20,18 +21,38 @@ export class EventControler implements _IeventControler {
         const date = val['client_modified'].split('T');
         const ymd = date[0];
         const time = date[1].slice(0, -1);
+        let year: number;
+        let month: string;
+        let day: string;
+        let hour: string;
+        let minute: string;
+        let second: string;
+        let createDate: string;
+
+        // 日時を日本時間に修正
+        let jpDate = new Date(ymd + " " + time);
+        jpDate.setHours(jpDate.getHours() + 9);
+
+        year = jpDate.getFullYear();
+        month = ('00' + jpDate.getMonth() + 1).slice(-2);
+        day = ('00' + jpDate.getDate()).slice(-2);
+        hour = ('00' + jpDate.getHours()).slice(-2);
+        minute = ('00' + jpDate.getMinutes()).slice(-2);
+        second = ('00' + jpDate.getSeconds()).slice(-2);
+
+        createDate = year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + second;
 
         let cloneListElement = listElement.clone();
         cloneListElement.attr("class", "file_list");
-        console.log(cloneListElement);
-        cloneListElement[0].dataset.file_name = val['path_lower'];
-
+        cloneListElement.find(".file_data")[0].dataset.file_path = val['path_lower'];
+        cloneListElement.find(".file_data")[0].dataset.file_name = val['name'];
         cloneListElement.find('.file_name a').html(val['name']);
-        cloneListElement.find('.date').html(ymd + " " + time);
+        cloneListElement.find('.date').html(createDate);
 
         listElement.after(cloneListElement);
-        console.log(val['name']);
-        console.log(listElement);
+
+        // 作成した要素にクリックイベントを追加
+        this.downloadFile(cloneListElement.find('.file_name a'));
       });
     },(error) => {
       alert("リストの取得に失敗しました\n" + error);
@@ -83,20 +104,43 @@ export class EventControler implements _IeventControler {
     });
   }
 
-    downloadFile(downloadLinkElement: JQuery<HTMLElement>) {
-        downloadLinkElement.on("click",(event) => {
-            const handleDropboxFile = new HandleDropboxFile();
+  downloadFile(downloadLinkElement: JQuery<HTMLElement>) {
+    downloadLinkElement.on("click",(event) => {
+      const handleDropboxFile = new HandleDropboxFile();
+      const filePath = $(event.target).closest("tr").data("file_path");
+      const fileName = $(event.target).closest("tr").data("file_name");
 
-            // ダウンロード処理実行
-            handleDropboxFile.downloadFile($(event.target).data("filename")).then((res) => {
-                if(typeof res !== "number"){
-                    alert("未知のエラーが発生しました");
-                }
-            },(error) => {
-              alert("ダウンロードに失敗しました\n" + error);
-            });
-        });
-    }
+      // fileNameが消えてしまうので一時的に保持
+      const handleCoolie = new HandleCookie();
+
+      handleCoolie.setCookie('fileName',fileName);
+
+      handleDropboxFile.downloadFile(filePath).then((data) => {
+        if(data === null){
+          alert("未知のエラーが発生しました");
+        }else{
+          // fileName再取得
+          const handleCookie = new HandleCookie();
+          const fileName = handleCookie.getCookie('fileName');
+          handleCookie.delCookie('fileName');
+
+          if(typeof data !== "string"){
+            alert("ファイルがテキスト形式ではありません");
+            return;
+          }
+
+          // ダウンロード用の要素を作成
+          const downLoadElemnt = document.createElement("a");
+          downLoadElemnt.download = fileName;
+          downLoadElemnt.href = URL.createObjectURL(new Blob([data], {type: 'text.plain'}));
+          downLoadElemnt.dataset.downloadurl = ["text/plain", downLoadElemnt.download, downLoadElemnt.href].join(":");
+          downLoadElemnt.click();
+        }
+      },(error) => {
+        alert("ダウンロードに失敗しました\n" + error);
+      });
+    });
+  }
 
     deleteFiles(deleteButtonElement: JQuery<HTMLElement>, deleteFileElements: JQuery<HTMLElement>) {
         deleteButtonElement.on("click",() => {

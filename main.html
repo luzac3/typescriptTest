@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="/typescriptTestWrapper/src/typescriptTest/css/main.css" type="text/css" media="screen">
@@ -24,11 +25,11 @@
               <tr>
                 <th scope="col">title</th>
                 <th scope="col">created</th>
-                <th scope="col">選択</th>
+                <th scope="col">select</th>
               </tr>
             </thead>
-            <tbody class="file_list template hidden" data-file_name="">
-              <tr>
+            <tbody class="file_list template hidden">
+              <tr class="file_data" data-file_name="" data-file_path="">
                 <td class="file_name"><a href="javascript:void(0)">ファイル名</a></td>
                 <td class="date">作成日時</td>
                 <td><input type="checkbox" name="" value=""></td>

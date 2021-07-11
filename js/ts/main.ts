@@ -1,14 +1,14 @@
-import { EventControler } from './eventControler.js';
-import { DragAndDrop } from './dragAndDropFile.js';
+import { EventControler } from './eventControler';
+import { DragAndDrop } from './dragAndDropFile';
 
 $(document).ready(() => {
-  const reSetButtonElement = $(".reSetButton");
-  const listElement = $(".file_list");
+  const reSetButtonElement = $(".re_set_button");
+  const listElement = $(".file_list_wrapper .template");
   const uploadButtonElement = $(".upload_button");
   const uploadFileElement = $(".upload_file");
-  const fileElements = $("file_list").find(".file_name");
+  const fileElements = $(".file_list");
   const deleteButtonElement = $(".delete_button");
-  const dropAreaElement = $(".upload_area");
+  const dropAreaElement = $(".upload_area_wrapper");
   const fileInformationElement = $(".file_information");
 
   const eventControler = new EventControler();
@@ -20,7 +20,6 @@ $(document).ready(() => {
   // イベントリストを登録
   eventControler.reSetList(reSetButtonElement, listElement);
   eventControler.uploadFile(uploadButtonElement, uploadFileElement);
-  eventControler.downloadFile(fileElements);
   eventControler.deleteFiles(deleteButtonElement, fileElements);
   dragAndDrop.setDragAndDropEvent();
 });

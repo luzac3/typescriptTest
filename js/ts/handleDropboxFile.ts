@@ -37,7 +37,7 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
 
       const reader = new FileReader();
 
-      reader.readAsBinaryString(file);
+      reader.readAsText(file);
 
       reader.onload = () => {
         console.log(reader.result);
@@ -51,7 +51,7 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
 
         const handleDropboxFile = new HandleDropboxFile();
 
-        handleDropboxFile.sendRequest(url, data, contentType, headers).then((res) => {
+        handleDropboxFile.sendRequest(url, data, contentType, headers).then(() => {
           resolve(1);
         },(error) => {
           reject(error);
@@ -60,21 +60,30 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
     });
   }
 
-  downloadFile(fileName: string){
+  downloadFile(path: string){
     return new Promise((resolve,reject) => {
-      const url = 'https://content.dropboxapi.com/2/files/download';
-      const data = '';
-      const contentType = '';
-      const headers = {
-        "Authorization": "Bearer " + this.accessToken,
-        //"Dropbox-API-Arg": '{"path": "/test","mode": "add","autorename": true,"mute": false}'
-        "Dropbox-API-Arg": JSON.stringify('{"path": "/test/" ' + fileName + ' , "mode": "overwrite"}')
-      }
+      // 日本語を含むパスをエスケープ
+      let escapePath = this.escapeFileNameToUtf8(path);
 
-      this.sendRequest(url, data, contentType, headers).then((res) => {
-        resolve(1);
+      $.ajax({
+        'url': 'https://content.dropboxapi.com/2/files/download',
+        'type': 'post',
+        'headers': {
+          'Authorization': 'Bearer ' + this.accessToken,
+          'Content-Type': 'application/octet-stream',
+          'Dropbox-API-Arg': JSON.stringify({
+            "path": escapePath,
+          }) //モード(下記参照)
+        },
+      }).then((data: any) => {
+        console.log(data);
+        resolve(data);
       },(error) => {
-        reject(error);
+        console.log(error);
+        reject(error["status"] + ":" + error["statusText"]);
+        if(error["status"] == 400){
+          window.location.replace("./oAuth.html");
+        }
       });
     });
   }
