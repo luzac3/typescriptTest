@@ -6,13 +6,12 @@ interface _IhandleCookie {
 
 export class HandleCookie implements _IhandleCookie{
     setCookie(key: string, value:string ,time = 0) {
-        var expires = "";
+        let maxAge = "";
         if (time) {
-            var date = new Date();
-            date.setTime(date.getTime() + time);
-            expires = "; expires=" + date.toUTCString();
+            maxAge = "; max-age=" + time;
         }
-        document.cookie = key + "=" + (value || "")  + expires + "; path=/";
+
+        document.cookie = key + "=" + (value || "")  + maxAge + "; path=/";
     }
 
     getCookie(key: string){
@@ -21,15 +20,16 @@ export class HandleCookie implements _IhandleCookie{
 
         let cookieArray: string[];
 
+        let ret= "";
+
         cookiesArray.forEach((cookie) => {
           cookieArray = cookie.split('=');
           if( cookieArray[0].trim() == key){
-              return cookieArray[1].trim();
+              ret = cookieArray[1].trim();
           }
         });
 
-        // マッチしなかった場合
-        return "";
+        return ret;
     }
 
     delCookie(key: string){
