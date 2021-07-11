@@ -3,7 +3,7 @@ import { HandleCookie } from "./handleCookie";
 interface _IhandleDropboxFile {
   uploadFile(file: File): Promise<unknown>;
   downloadFile(fileName: string): Promise<unknown>;
-  deleteFiles(fileNames: string[]): Promise<unknown>;
+  deleteFile(deleteFilePath: string): Promise<unknown>;
   getFileList(): Promise<any>;
 }
 
@@ -40,7 +40,6 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
       reader.readAsText(file);
 
       reader.onload = () => {
-        console.log(reader.result);
         if(reader.result == null){
           alert("ファイル情報の取得に失敗しました");
           return;
@@ -81,17 +80,17 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
     });
   }
 
-  deleteFiles(fileNames: string[]){
+  deleteFile(deleteFilePath: string){
     return new Promise((resolve,reject) => {
-      const url = 'https://content.dropboxapi.com/2/file_requests/delete';
-      const data = '{"ids":' + fileNames + '}';
+      const url = 'https://api.dropboxapi.com/2/files/delete_v2';
+      const data = JSON.stringify({"path": deleteFilePath});
       const contentType = 'application/json';
       const headers = {
         "Authorization": "Bearer " + this.accessToken
       }
 
-      this.sendRequest(url, data, contentType, headers).then((res) => {
-        resolve(res);
+      this.sendRequest(url, data, contentType, headers).then(() => {
+        resolve(1);
       },(error) => {
         reject(error);
       });
@@ -129,10 +128,8 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
         'contentType': contentType,
         'headers': headers,
       }).then((data: string) => {
-        console.log(data);
         resolve(data);
       },(error) => {
-        console.log(error);
         reject(error["status"] + ":" + error["statusText"]);
         if(error["status"] == 400){
           window.location.replace("./oAuth.html");

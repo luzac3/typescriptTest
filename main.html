@@ -25,21 +25,17 @@
               <tr>
                 <th scope="col">title</th>
                 <th scope="col">created</th>
-                <th scope="col">select</th>
+                <th scope="col">delete</th>
               </tr>
             </thead>
             <tbody class="file_list template hidden">
               <tr class="file_data" data-file_name="" data-file_path="">
                 <td class="file_name"><a href="javascript:void(0)">ファイル名</a></td>
                 <td class="date">作成日時</td>
-                <td><input type="checkbox" name="" value=""></td>
+                <td><button type="button" class="delete_button" value="delete_button">削除</button></td>
               </tr>
             </tbody>
           </table>
-        </div>
-        <div>
-          <button type="button" class="re_set_button" value="re_set_button">リスト再読込</button>
-          <button type="button" class="delete_button" value="delete_button">選択項目削除</button>
         </div>
         <div class="modal hidden"></div>
       </div>

@@ -6,8 +6,6 @@ $(document).ready(() => {
   const listElement = $(".file_list_wrapper .template");
   const uploadButtonElement = $(".upload_button");
   const uploadFileElement = $(".upload_file");
-  const fileElements = $(".file_list");
-  const deleteButtonElement = $(".delete_button");
   const dropAreaElement = $(".upload_area_wrapper");
   const fileInformationElement = $(".file_information");
 
@@ -20,6 +18,5 @@ $(document).ready(() => {
   // イベントリストを登録
   eventControler.reSetList(reSetButtonElement, listElement);
   eventControler.uploadFile(uploadButtonElement, uploadFileElement);
-  eventControler.deleteFiles(deleteButtonElement, fileElements);
   dragAndDrop.setDragAndDropEvent();
 });

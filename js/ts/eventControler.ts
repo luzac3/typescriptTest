@@ -7,7 +7,7 @@ interface _IeventControler {
     reSetList(reSetButtonElement:JQuery<HTMLElement>, listElement: JQuery<HTMLElement>): void;
     uploadFile(uploadButtonElement: JQuery<HTMLElement>, uploadFileElement: JQuery<HTMLElement>): void;
     downloadFile(downloadLinkElement: JQuery<HTMLElement>): void;
-    deleteFiles(deleteButtonElement: JQuery<HTMLElement>, deleteFileElements: JQuery<HTMLElement>): void;
+    deleteFile(deleteButtonElement: JQuery<HTMLElement>): void;
 }
 
 export class EventControler implements _IeventControler {
@@ -15,8 +15,6 @@ export class EventControler implements _IeventControler {
     const handleDropboxFile = new HandleDropboxFile();
 
     handleDropboxFile.getFileList().then((listData: any) => {
-      console.log(listData);
-
       listData.forEach((val: any) => {
         const date = val['client_modified'].split('T');
         const ymd = date[0];
@@ -53,11 +51,11 @@ export class EventControler implements _IeventControler {
 
         // 作成した要素にクリックイベントを追加
         this.downloadFile(cloneListElement.find('.file_name a'));
+        this.deleteFile(cloneListElement.find('.delete_button'));
       });
     },(error) => {
       alert("リストの取得に失敗しました\n" + error);
     });
-    console.log(listElement);
   }
 
   reSetList(reSetButtonElement:JQuery<HTMLElement>, listElement: JQuery<HTMLElement>) {
@@ -89,6 +87,7 @@ export class EventControler implements _IeventControler {
       handleDropboxFile.uploadFile(uploadFile).then((res) => {
         if(typeof res === "number"){
           alert("アップロードしました");
+          location.reload();
         }else{
           alert("未知のエラーが発生しました");
         }
@@ -142,44 +141,26 @@ export class EventControler implements _IeventControler {
     });
   }
 
-    deleteFiles(deleteButtonElement: JQuery<HTMLElement>, deleteFileElements: JQuery<HTMLElement>) {
-        deleteButtonElement.on("click",() => {
-            const filesNum = deleteFileElements.length;
+  deleteFile(deleteButtonElement: JQuery<HTMLElement>) {
+    deleteButtonElement.on("click",(event) => {
+      const deleteFilePath = $(event.target).closest("tr").data("file_path");
+      const deleteFileName = $(event.target).closest("tr").data("file_name");
 
-            const confirmMessage = filesNum + "件削除します。\nよろしいですか？";
+      const confirmMessage = deleteFileName + "を削除します。\nよろしいですか？";
 
-            let deleteFileElementsList: JQuery<HTMLElement>;
-
-            let deleteFileList: string[];
-
-            if(window.confirm(confirmMessage)){
-                const handleDropboxFile = new HandleDropboxFile();
-
-                // 削除ファイル名一覧を取得
-                deleteFileElementsList = deleteFileElements.find("input[type='checkbox']").filter(":checked");
-
-                deleteFileList = [];
-
-                deleteFileElementsList.each((value: any)=>{
-                    deleteFileList.push($(value).data("filename"));
-                });
-
-                if(deleteFileList.length){
-                  alert("1件も選択されていません");
-                  return;
-                }
-
-                // 削除処理実行
-                handleDropboxFile.deleteFiles(deleteFileList).then((res) => {
-                    if(typeof res === "number"){
-                        alert(filesNum + "件削除しました");
-                    }else{
-                        alert("未知のエラーが発生しました");
-                    }
-                },(error) => {
-                  alert("削除に失敗しました\n" + error);
-                });
-            }
+      if(window.confirm(confirmMessage)){
+        const handleDropboxFile = new HandleDropboxFile();
+        handleDropboxFile.deleteFile(deleteFilePath).then((res) => {
+          if(typeof res === "number"){
+            alert("削除しました");
+            location.reload();
+          }else{
+            alert("未知のエラーが発生しました");
+          }
+        },(error) => {
+          alert("削除に失敗しました\n" + error);
         });
-    }
+      }
+    });
+  }
 }
