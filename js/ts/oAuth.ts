@@ -1,6 +1,6 @@
 import redirectUri from '../config/redirectUri.json';
-import { HandleOAuth } from './handleOAuth.js';
-import { HandleCookie } from './handleCookie.js';
+import { HandleOAuth } from './handleOAuth';
+import { HandleCookie } from './handleCookie';
 
 $(document).ready(() => {
   const url = location.search.substring(1).split('&');
@@ -13,18 +13,19 @@ $(document).ready(() => {
 
   handleCookie.delCookie("accessToken");
 
-  if(code != ""){
+  if(code == ""){
+    console.log("call authorization");
     handleOAuth.authorize();
   }else{
     handleOAuth.getAccessTokenFromCode(code).then((data) => {
         if(typeof data === 'string'){
             handleCookie.setCookie("accessToken", data, 30*60);
-            location.href = "../main.html";
+            window.location.replace("./main.html");
         }else{
             alert("トークンが不正です");
         }
-    },() => {
-        alert("認証に失敗しました");
+    },(error) => {
+        alert("認証に失敗しました。\n" + error["error"] + ":" + error["error_description"]);
     });
   }
 });
