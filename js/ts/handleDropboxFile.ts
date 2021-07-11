@@ -62,25 +62,21 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
 
   downloadFile(path: string){
     return new Promise((resolve,reject) => {
-      $.ajax({
-        'url': 'https://content.dropboxapi.com/2/files/download',
-        'type': 'post',
-        'headers': {
-          'Authorization': 'Bearer ' + this.accessToken,
-          'Content-Type': 'application/octet-stream',
-          'Dropbox-API-Arg': JSON.stringify({
-            "path": path,
-          }) //モード(下記参照)
-        },
-      }).then((data: any) => {
-        console.log(data);
-        resolve(data);
+      const url = 'https://content.dropboxapi.com/2/files/download';
+      const data = '';
+      const contentType = '';
+      const headers = {
+        'Authorization': 'Bearer ' + this.accessToken,
+        'Content-Type': 'application/octet-stream',
+        'Dropbox-API-Arg': JSON.stringify({
+          "path": path,
+        }),
+      }
+
+      this.sendRequest(url, data, contentType, headers).then((res) => {
+        resolve(res);
       },(error) => {
-        console.log(error);
-        reject(error["status"] + ":" + error["statusText"]);
-        if(error["status"] == 400){
-          window.location.replace("./oAuth.html");
-        }
+        reject(error);
       });
     });
   }
