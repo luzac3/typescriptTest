@@ -62,9 +62,6 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
 
   downloadFile(path: string){
     return new Promise((resolve,reject) => {
-      // 日本語を含むパスをエスケープ
-      let escapePath = this.escapeFileNameToUtf8(path);
-
       $.ajax({
         'url': 'https://content.dropboxapi.com/2/files/download',
         'type': 'post',
@@ -72,7 +69,7 @@ export class HandleDropboxFile implements _IhandleDropboxFile{
           'Authorization': 'Bearer ' + this.accessToken,
           'Content-Type': 'application/octet-stream',
           'Dropbox-API-Arg': JSON.stringify({
-            "path": escapePath,
+            "path": path,
           }) //モード(下記参照)
         },
       }).then((data: any) => {

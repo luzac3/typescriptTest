@@ -44,7 +44,7 @@ export class EventControler implements _IeventControler {
 
         let cloneListElement = listElement.clone();
         cloneListElement.attr("class", "file_list");
-        cloneListElement.find(".file_data")[0].dataset.file_path = val['path_lower'];
+        cloneListElement.find(".file_data")[0].dataset.file_path = val['id'];
         cloneListElement.find(".file_data")[0].dataset.file_name = val['name'];
         cloneListElement.find('.file_name a').html(val['name']);
         cloneListElement.find('.date').html(createDate);
