@@ -6,6 +6,6 @@ $(document).ready(() => {
   handleCookie.delCookie('accessToken');
 
     $(".enter_button").on("click",() => {
-        //location.href = "./oAuth.html";
+        location.href = "./oAuth.html";
     });
 });
