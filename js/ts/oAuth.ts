@@ -3,6 +3,7 @@ import { HandleOAuth } from './handleOAuth';
 import { HandleCookie } from './handleCookie';
 
 $(document).ready(() => {
+  // 認証後のリダイレクトで戻ってきた場合、URLからCODEを取得
   const url = location.search.substring(1).split('&');
   const code = url[0];
 
@@ -14,7 +15,6 @@ $(document).ready(() => {
   handleCookie.delCookie("accessToken");
 
   if(code == ""){
-    console.log("call authorization");
     handleOAuth.authorize();
   }else{
     handleOAuth.getAccessTokenFromCode(code).then((data) => {
@@ -25,7 +25,7 @@ $(document).ready(() => {
             alert("トークンが不正です");
         }
     },(error) => {
-        alert("認証に失敗しました。\n" + error["error"] + ":" + error["error_description"]);
+        alert("認証に失敗しました。\n" + error);
     });
   }
 });
