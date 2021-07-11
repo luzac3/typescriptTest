@@ -13,13 +13,22 @@ export class DragAndDrop {
         this.dropAreaElement.on('dragover',(event) => {
            event.stopPropagation();
            event.preventDefault();
-           this.dropAreaElement[0].style.background = '#e1e7f0';
+           this.dropAreaElement.addClass("bg-info");
+           this.dropAreaElement.removeClass("bg-warning");
+           this.dropAreaElement.removeClass("bg-success");
         });
 
         this.dropAreaElement.on('dragleave',(event) => {
            event.stopPropagation();
            event.preventDefault();
-           this.dropAreaElement[0].style.background = '#ffffff';
+           if(this.uploadFileElement.prop('files').length === 0){
+             this.dropAreaElement.addClass("bg-warning");
+             this.dropAreaElement.removeClass("bg-success");
+           }else{
+             this.dropAreaElement.addClass("bg-success");
+             this.dropAreaElement.removeClass("bg-warning");
+           }
+           this.dropAreaElement.removeClass("bg-info");
         });
 
         this.dropAreaElement.on('drop',(event) => {
@@ -27,7 +36,9 @@ export class DragAndDrop {
 
             event.stopPropagation();
             event.preventDefault();
-            this.dropAreaElement[0].style.background = '#ffffff';
+            this.dropAreaElement.addClass("bg-success");
+            this.dropAreaElement.removeClass("bg-warning");
+            this.dropAreaElement.removeClass("bg-info");
 
             if(event.originalEvent == undefined){
               alert("未知のエラーです");
@@ -43,14 +54,14 @@ export class DragAndDrop {
 
             if(fileListObject.length > 1){
                 alert("複数ファイルアップロードには対応しておりません");
-            }
-
-            if(this.uploadFileElement.prop('files') == null || this.uploadFileElement.prop('files') == undefined){
-              return;
+                return;
             }
 
             // inputのファイルにデータを格納
             this.uploadFileElement.prop('files',fileListObject);
+
+            // inputを書き換えた際にChangeイベントが走らないため、changeを実行
+            this.uploadFileElement.change();
         });
 
         this.dropAreaElement.on('click',() => {
@@ -60,6 +71,14 @@ export class DragAndDrop {
         this.uploadFileElement.on('change',() => {
             let fileSize: number;
             let fileUnit: string;
+
+            if(this.uploadFileElement.prop('files').length === 0){
+              this.fileInformationElement.html("ファイルがありません");
+              this.dropAreaElement.addClass("bg-warning");
+              this.dropAreaElement.removeClass("bg-info");
+              this.dropAreaElement.removeClass("bg-success");
+              return;
+            }
 
             const fileObject = this.uploadFileElement.prop('files')[0];
 
@@ -89,7 +108,7 @@ class ChangeSizeToAppropriateUnit {
 
         if(fileSize >= this.gb) {
             this.unit = 'Gbyte';
-            this.convertedSize = Math.floor((fileSize / this.kb) * 100) / 100;
+            this.convertedSize = Math.floor((fileSize / this.gb) * 100) / 100;
         }else if(fileSize >= this.mb) {
             this.unit = 'Mbyte';
             this.convertedSize = Math.floor((fileSize / this.mb) * 100) / 100;
