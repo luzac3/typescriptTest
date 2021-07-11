@@ -1,45 +1,51 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="/typescriptTestWrapper/src/typescriptTest/css/main.css" type="text/css" media="screen">
-        <script type="module" src="./js/dist/main.js"></script>
-    </head>
-    <body>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="/typescriptTestWrapper/src/typescriptTest/css/main.css" type="text/css" media="screen">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module" src="./js/dist/main.js"></script>
+  </head>
+  <body>
+    <div class="container mt-3">
       <div class="main">
-        <div class="upload_area_wrapper">
-            <form class="upload_area" action="index.html" method="post" enctype="multipart/form-data">
-              <p>ファイルをドラッグ</p>
-              <input type="file" name="uploadFile" value="uploadFile">
-            </form>
-            <p><button type="button" name="" value="upload_file">アップロード</button></p>
+        <div class="upload_area_wrapper bg-warning border border-5 border-secondary rounded">
+          <form class="upload_area p-2 d-flex flex-column .justify-content-center align-items-center" action="index.html" method="post" enctype="multipart/form-data">
+            <p class="p-3">ファイルをドラッグ、または枠内をクリックしてください</p>
+            <p class="file_information h3 p-3">ファイルがありません</p>
+            <input type="file" class="upload_file hidden" value="upload_file">
+          </form>
         </div>
-        <div>
-          <p><button type="button" class="reSetButton" value="reSetButton">リスト再読込</button></p>
-        </div>
+        <p class="p-3"><button type="button" class="upload_button" value="upload_button">アップロード</button></p>
         <div class="file_list_wrapper">
           <table class="table">
             <thead>
               <tr>
                 <th scope="col">title</th>
                 <th scope="col">created</th>
-                <th scope="col"></th>
+                <th scope="col">選択</th>
               </tr>
             </thead>
-            <tbody clss="file_list template hidden" data-fileId="">
+            <tbody class="file_list template hidden" data-file_name="">
               <tr>
-                <td>ファイル名</td>
-                <td>作成日時</td>
-                <td></td>
+                <td class="file_name"><a href="javascript:void(0)">ファイル名</a></td>
+                <td class="date">作成日時</td>
+                <td><input type="checkbox" name="" value=""></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div><button type="button" value="del" class="del">選択項目削除</button></div>
+        <div>
+          <button type="button" class="re_set_button" value="re_set_button">リスト再読込</button>
+          <button type="button" class="delete_button" value="delete_button">選択項目削除</button>
+        </div>
         <div class="modal hidden"></div>
       </div>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-      </body>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
 </html>

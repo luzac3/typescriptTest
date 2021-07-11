@@ -1,141 +1,145 @@
-import { HandleCookie } from "./handleCookie.js";
+import { HandleCookie } from "./handleCookie";
 
 interface _IhandleDropboxFile {
-    uploadFile(file: File): Promise<unknown>;
-    downloadFile(fileName: string): Promise<unknown>;
-    deleteFiles(fileNames: string[]): Promise<unknown>;
-    getFileList(): Promise<unknown>;
+  uploadFile(file: File): Promise<unknown>;
+  downloadFile(fileName: string): Promise<unknown>;
+  deleteFiles(fileNames: string[]): Promise<unknown>;
+  getFileList(): Promise<any>;
 }
 
 export class HandleDropboxFile implements _IhandleDropboxFile{
-    private accessToken: string;
+  private accessToken: string;
 
-    constructor() {
-        const handleCookie = new HandleCookie();
+  constructor() {
+    const handleCookie = new HandleCookie();
 
-        this.accessToken = handleCookie.getCookie("accessToken");
+    this.accessToken = handleCookie.getCookie("accessToken");
 
-        // トークンがない場合、認証ページに移動
-        if(this.accessToken == ""){
-            location.href = "./oAuth.html";
+    // トークンがない場合、認証ページに移動
+    if(this.accessToken == ""){
+      console.log("no token");
+      window.location.replace("./oAuth.html");
+    }
+  }
+
+  uploadFile(file: File){
+    return new Promise((resolve,reject) => {
+      const url = 'https://content.dropboxapi.com/2/files/upload';
+      let data: string;
+
+      // 日本語ファイル名をエスケープ
+      let fileName = this.escapeFileNameToUtf8(file.name);
+      const contentType = 'application/octet-stream';
+      const headers = {
+        "Authorization": "Bearer " + this.accessToken,
+        "Dropbox-API-Arg": '{"path": "/test/'+fileName+'","mode": "add","autorename": true,"mute": false}'
+      }
+
+      const reader = new FileReader();
+
+      reader.readAsBinaryString(file);
+
+      reader.onload = () => {
+        console.log(reader.result);
+        if(reader.result == null){
+          alert("ファイル情報の取得に失敗しました");
+          return;
         }
-    }
+        if(typeof reader.result === 'string'){
+          data = reader.result;
+        }
 
-    uploadFile(file: File){
-        return new Promise((resolve,reject) => {
-            // fileReader
-            const url = 'https://content.dropboxapi.com/2/files/upload';
-            let data: string | ArrayBuffer;
-            const contentType = 'application/octet-stream';
-            const headers = {
-                "Authorization": "Bearer " + this.accessToken,
-                "Dropbox-API-Arg": '{"path": "' + file.name + '","mode": "add","autorename": true,"mute": false}'
-            }
+        const handleDropboxFile = new HandleDropboxFile();
 
-            const reader = new FileReader();
-
-            reader.readAsDataURL(file);
-
-            reader.onload = () => {
-                if(reader.result == null){
-                  alert("ファイル情報の取得に失敗しました");
-                  return;
-                }else{
-                  data = reader.result;
-                }
-
-                const handleDropboxFile = new HandleDropboxFile();
-
-                handleDropboxFile.sendRequest(url, data, contentType, headers).then(() => {
-                    alert("ok");
-                    resolve(1);
-                },() => {
-                    //エラーログ吐き出し
-                    alert("ng");
-                    reject(0);
-                });
-            }
+        handleDropboxFile.sendRequest(url, data, contentType, headers).then((res) => {
+          resolve(1);
+        },(error) => {
+          reject(error);
         });
-    }
+      }
+    });
+  }
 
-    downloadFile(fileName: string){
-            return new Promise((resolve,reject) => {
-            const url = 'https://content.dropboxapi.com/2/files/download';
-            const data = '';
-            const contentType = '';
-            const headers = {
-                "Authorization": "Bearer " + this.accessToken,
-                "Dropbox-API-Arg": '{"path": "' + fileName + '","mode": "add","autorename": true,"mute": false}'
-            }
+  downloadFile(fileName: string){
+    return new Promise((resolve,reject) => {
+      const url = 'https://content.dropboxapi.com/2/files/download';
+      const data = '';
+      const contentType = '';
+      const headers = {
+        "Authorization": "Bearer " + this.accessToken,
+        //"Dropbox-API-Arg": '{"path": "/test","mode": "add","autorename": true,"mute": false}'
+        "Dropbox-API-Arg": JSON.stringify('{"path": "/test/" ' + fileName + ' , "mode": "overwrite"}')
+      }
 
-            this.sendRequest(url, data, contentType, headers).then(() => {
-                alert("ok");
-                resolve(1);
-            },() => {
-                //エラーログ吐き出し
-                alert("ng");
-                reject(0);
-            });
-        });
-    }
+      this.sendRequest(url, data, contentType, headers).then((res) => {
+        resolve(1);
+      },(error) => {
+        reject(error);
+      });
+    });
+  }
 
-    deleteFiles(fileNames: string[]){
-        return new Promise((resolve,reject) => {
-            const url = 'https://content.dropboxapi.com/2/file_requests/delete';
-            const data = '{"ids":' + fileNames + '}';
-            const contentType = 'Content-Type: application/json';
-            const headers = {
-                "Authorization": "Bearer " + this.accessToken
-            }
+  deleteFiles(fileNames: string[]){
+    return new Promise((resolve,reject) => {
+      const url = 'https://content.dropboxapi.com/2/file_requests/delete';
+      const data = '{"ids":' + fileNames + '}';
+      const contentType = 'application/json';
+      const headers = {
+        "Authorization": "Bearer " + this.accessToken
+      }
 
-            this.sendRequest(url, data, contentType, headers).then(() => {
-                alert("ok");
-                resolve(1);
-            },() => {
-                //エラーログ吐き出し
-                alert("ng");
-                reject(0);
-            });
-        });
-    }
+      this.sendRequest(url, data, contentType, headers).then((res) => {
+        resolve(res);
+      },(error) => {
+        reject(error);
+      });
+    });
+  }
 
-    getFileList(){
-        return new Promise((resolve,reject) => {
-            const url = 'https://content.dropboxapi.com/2/file_requests/list';
-            const data = '';
-            const contentType = 'Content-Type: application/json';
-            let dropboxFileList: {};
-            const headers = {
-                "Authorization": "Bearer " + this.accessToken
-            }
+  getFileList(){
+    return new Promise((resolve,reject) => {
+      const url = 'https://api.dropboxapi.com/2/files/list_folder';
+      const data = JSON.stringify({'path': '/test'});
+      const contentType = 'application/json';
+      const headers = {
+        "Authorization": "Bearer " + this.accessToken
+      }
 
-            this.sendRequest(url, data, contentType, headers).then((list: string) => {
-                dropboxFileList = JSON.stringify(list);
-                resolve(dropboxFileList);
-            },() => {
-                //エラーログ吐き出し
-                alert("ng");
-                reject(0);
-            });
-        });
-    }
+      this.sendRequest(url, data, contentType, headers).then((data: any) => {
+        resolve(data['entries']);
+      },(error) => {
+        reject(error.responseText);
+      });
+    });
+  }
 
-    private sendRequest(url: string, data: string | ArrayBuffer, contentType: string, headers: {}): Promise<string> {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                'url': url,
-                'type': 'post',
-                'data': data,
-                'processData': false,
-                'contentType': contentType,
-                'headers': headers,
-            }).then((res: string) => {
-                resolve(res);
-            },() => {
-                reject('error');
-            }).catch((e) => {
+  getToken(){
+    return this.accessToken;
+  }
 
-            });
-        });
-    }
+  private sendRequest(url: string, data: string, contentType: string, headers: {}): Promise<string> {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        'url': url,
+        'type': 'post',
+        'data': data,
+        'processData': false,
+        'contentType': contentType,
+        'headers': headers,
+      }).then((data: string) => {
+        console.log(data);
+        resolve(data);
+      },(error) => {
+        console.log(error);
+        reject(error["status"] + ":" + error["statusText"]);
+        if(error["status"] == 400){
+          window.location.replace("./oAuth.html");
+        }
+      });
+    });
+  }
+
+  private escapeFileNameToUtf8(fileName: string) {
+    return unescape( encodeURIComponent(fileName));
+  }
 }
